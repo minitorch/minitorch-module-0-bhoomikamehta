@@ -25,35 +25,73 @@ class Module:
         self.training = True
 
     def modules(self) -> Sequence[Module]:
-        "Return the direct child modules of this module."
+        """
+        Return the direct child modules of this module.
+
+        Returns:
+            Sequence[Module]: A list of all the direct child modules of this module.
+        """
         m: Dict[str, Module] = self.__dict__["_modules"]
         return list(m.values())
 
     def train(self) -> None:
-        "Set the mode of this module and all descendent modules to `train`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        """
+        Set the mode of this module and all descendant modules to `train`.
+
+        When in `train` mode, layers such as Dropout and BatchNorm will behave differently
+        compared to evaluation mode. This method applies the `train` mode recursively to
+        all child modules.
+        """
+        self.training = True
+
+        for module in self.modules():
+            module.train()
 
     def eval(self) -> None:
-        "Set the mode of this module and all descendent modules to `eval`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        """
+        Set the mode of this module and all descendant modules to `eval`.
+
+        When in `eval` mode, layers such as Dropout and BatchNorm will behave differently
+        compared to training mode. This method applies the `eval` mode recursively to all
+        child modules.
+        """
+        self.training = False
+        for module in self.modules():
+            module.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
-        Collect all the parameters of this module and its descendents.
+        Collect all the parameters of this module and its descendants, along with their names.
 
+        The parameters are returned with their full hierarchical names, e.g., `module_name.param_name`
+        to reflect where each parameter is located within the module tree.
 
         Returns:
-            The name and `Parameter` of each ancestor parameter.
+            Sequence[Tuple[str, Parameter]]: A list of tuples containing parameter names and
+            their associated `Parameter` object.
         """
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        params = []
+        for name, param in self._parameters.items():
+            params.append((name, param))
+        for module_name, module in self._modules.items():
+            for sub_name, sub_param in module.named_parameters():
+                params.append((f"{module_name}.{sub_name}", sub_param))
+        return params
 
     def parameters(self) -> Sequence[Parameter]:
-        "Enumerate over all the parameters of this module and its descendents."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        """
+        Enumerate over all the parameters of this module and its descendants.
+
+        Returns:
+            Sequence[Parameter]: A list of all `Parameter` objects in this module and its
+            child modules.
+        """
+        params = []
+        for name, param in self._parameters.items():
+            params.append(param)
+        for module in self.modules():
+            params.extend(module.parameters())
+        return params
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
