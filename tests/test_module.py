@@ -92,8 +92,8 @@ class Module3(minitorch.Module):
         self.parameter_a = minitorch.Parameter(VAL_A)
 
 
-@pytest.mark.task0_4
 @given(med_ints, med_ints)
+@pytest.mark.task0_4
 def test_module(size_a: int, size_b: int) -> None:
     "Check the properties of a single module"
     module = Module2()
@@ -113,8 +113,8 @@ def test_module(size_a: int, size_b: int) -> None:
     assert named_parameters["extra_parameter_0"].value == 0
 
 
-@pytest.mark.task0_4
 @given(med_ints, med_ints, small_floats)
+@pytest.mark.task0_4
 def test_stacked_module(size_a: int, size_b: int, val: float) -> None:
     "Check the properties of a stacked module"
     module = Module1(size_a, size_b, val)
